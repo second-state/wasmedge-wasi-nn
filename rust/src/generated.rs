@@ -122,6 +122,7 @@ pub const GRAPH_ENCODING_OPENVINO: GraphEncoding = GraphEncoding(0);
 pub const GRAPH_ENCODING_ONNX: GraphEncoding = GraphEncoding(1);
 pub const GRAPH_ENCODING_TENSORFLOW: GraphEncoding = GraphEncoding(2);
 pub const GRAPH_ENCODING_PYTORCH: GraphEncoding = GraphEncoding(3);
+pub const GRAPH_ENCODING_TENSORFLOWLITE: GraphEncoding = GraphEncoding(4);
 impl GraphEncoding {
     pub const fn raw(&self) -> u8 {
         self.0
@@ -133,6 +134,7 @@ impl GraphEncoding {
             1 => "ONNX",
             2 => "TENSORFLOW",
             3 => "PYTORCH",
+            4 => "TENSORFLOWLITE",
             _ => unsafe { core::hint::unreachable_unchecked() },
         }
     }
@@ -142,6 +144,7 @@ impl GraphEncoding {
             1 => "",
             2 => "",
             3 => "",
+            4 => "",
             _ => unsafe { core::hint::unreachable_unchecked() },
         }
     }
@@ -238,6 +241,23 @@ pub unsafe fn set_input(
     }
 }
 
+pub unsafe fn set_input_string(
+    context: GraphExecutionContext,
+    index_name: &str,
+    tensor: Tensor,
+) -> Result<(), NnErrno> {
+    let ret = wasi_ephemeral_nn::set_input_string(
+        context as i32,
+        index_name.as_ptr() as i32,
+        index_name.len() as i32,
+        &tensor as *const _ as i32,
+    );
+    match ret {
+        0 => Ok(()),
+        _ => Err(NnErrno(ret as u16)),
+    }
+}
+
 pub unsafe fn get_output(
     context: GraphExecutionContext,
     index: u32,
@@ -272,6 +292,7 @@ pub mod wasi_ephemeral_nn {
         pub fn load(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32) -> i32;
         pub fn init_execution_context(arg0: i32, arg1: i32) -> i32;
         pub fn set_input(arg0: i32, arg1: i32, arg2: i32) -> i32;
+        pub fn set_input_string(arg0: i32, arg1: i32, arg2: i32, arg3: i32) -> i32;
         pub fn get_output(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32) -> i32;
         pub fn compute(arg0: i32) -> i32;
     }
