@@ -241,12 +241,12 @@ pub unsafe fn set_input(
     }
 }
 
-pub unsafe fn set_input_string(
+pub unsafe fn set_input_by_string(
     context: GraphExecutionContext,
     index_name: &str,
     tensor: Tensor,
 ) -> Result<(), NnErrno> {
-    let ret = wasi_ephemeral_nn::set_input_string(
+    let ret = wasi_ephemeral_nn::set_input_by_string(
         context as i32,
         index_name.as_ptr() as i32,
         index_name.len() as i32,
@@ -278,14 +278,14 @@ pub unsafe fn get_output(
     }
 }
 
-pub unsafe fn get_output_string(
+pub unsafe fn get_output_by_string(
     context: GraphExecutionContext,
     index_name: &str,
     out_buffer: *mut u8,
     out_buffer_max_size: BufferSize,
 ) -> Result<BufferSize, NnErrno> {
     let mut rp0 = MaybeUninit::<BufferSize>::uninit();
-    let ret = wasi_ephemeral_nn::get_output_string(
+    let ret = wasi_ephemeral_nn::get_output_by_string(
         context as i32,
         index_name.as_ptr() as i32,
         index_name.len() as i32,
@@ -313,9 +313,9 @@ pub mod wasi_ephemeral_nn {
         pub fn load(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32) -> i32;
         pub fn init_execution_context(arg0: i32, arg1: i32) -> i32;
         pub fn set_input(arg0: i32, arg1: i32, arg2: i32) -> i32;
-        pub fn set_input_string(arg0: i32, arg1: i32, arg2: i32, arg3: i32) -> i32;
+        pub fn set_input_by_string(arg0: i32, arg1: i32, arg2: i32, arg3: i32) -> i32;
         pub fn get_output(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32) -> i32;
-        pub fn get_output_string(
+        pub fn get_output_by_string(
             arg0: i32,
             arg1: i32,
             arg2: i32,
