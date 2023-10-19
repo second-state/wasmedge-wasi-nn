@@ -248,6 +248,21 @@ pub unsafe fn load_by_name(name: &str) -> Result<Graph, NnErrno> {
     }
 }
 
+pub unsafe fn load_by_name_with_config(name: &str, config: &str) -> Result<Graph, NnErrno> {
+    let mut rp0 = MaybeUninit::<Graph>::uninit();
+    let ret = wasi_ephemeral_nn::load_by_name_with_config(
+        name.as_ptr() as i32,
+        name.len() as i32,
+        config.as_ptr() as i32,
+        config.len() as i32,
+        rp0.as_mut_ptr() as i32,
+    );
+    match ret {
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const Graph)),
+        _ => Err(NnErrno(ret as u16)),
+    }
+}
+
 pub unsafe fn init_execution_context(graph: Graph) -> Result<GraphExecutionContext, NnErrno> {
     let mut rp0 = MaybeUninit::<GraphExecutionContext>::uninit();
     let ret = wasi_ephemeral_nn::init_execution_context(graph as i32, rp0.as_mut_ptr() as i32);
@@ -309,5 +324,12 @@ pub mod wasi_ephemeral_nn {
         pub fn set_input(arg0: i32, arg1: i32, arg2: i32) -> i32;
         pub fn get_output(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32) -> i32;
         pub fn compute(arg0: i32) -> i32;
+        pub fn load_by_name_with_config(
+            arg0: i32,
+            arg1: i32,
+            arg2: i32,
+            arg3: i32,
+            arg4: i32,
+        ) -> i32;
     }
 }
