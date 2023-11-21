@@ -56,6 +56,7 @@ pub enum ExecutionTarget {
 pub struct GraphBuilder {
     encoding: GraphEncoding,
     target: ExecutionTarget,
+    config: Option<String>,
 }
 
 impl Default for GraphBuilder {
@@ -70,7 +71,19 @@ impl GraphBuilder {
     #[inline(always)]
     #[must_use]
     pub fn new(encoding: GraphEncoding, target: ExecutionTarget) -> Self {
-        Self { encoding, target }
+        Self {
+            encoding,
+            target,
+            config: None,
+        }
+    }
+
+    /// Set graph configuration.
+    #[inline(always)]
+    #[must_use]
+    pub fn config(mut self, config: String) -> Self {
+        self.config = Some(config);
+        self
     }
 
     /// Set graph encoding.
@@ -149,7 +162,10 @@ impl GraphBuilder {
     #[inline(always)]
     pub fn build_from_cache(self, name: &str) -> Result<Graph, Error>
 where {
-        let graph_handle = syscall::load_by_name(name)?;
+        let graph_handle = match self.config.clone() {
+            Some(config) => syscall::load_by_name_with_config(name, &config)?,
+            None => syscall::load_by_name(name)?,
+        };
         Ok(Graph {
             build_info: self,
             graph_handle,
@@ -407,6 +423,30 @@ mod syscall {
             Err(Error::BackendError(BackendError::from(res)))
         }
     }
+
+    #[inline(always)]
+    pub(crate) fn load_by_name_with_config(name: &str, config: &str) -> Result<GraphHandle, Error> {
+        let mut graph_handle = 0;
+        let name_cstring = CString::new(name.clone()).unwrap_or_default();
+        let name_ptr = name_cstring.as_ptr();
+        let config_cstring = CString::new(config.clone()).unwrap_or_default();
+        let config_ptr = config_cstring.as_ptr();
+        let res = unsafe {
+            wasi_ephemeral_nn::load_by_name_with_config(
+                name_ptr as i32,
+                name.len() as i32,
+                config_ptr as i32,
+                config.len() as i32,
+                &mut graph_handle as *mut _ as i32,
+            )
+        };
+
+        if res == 0 {
+            Ok(graph_handle)
+        } else {
+            Err(Error::BackendError(BackendError::from(res)))
+        }
+    }
 }
 
 // These stubbed out functions are only necessary for running `cargo test`.
@@ -452,6 +492,10 @@ mod syscall {
         _: usize,
         _: &mut [u8],
     ) -> Result<usize, Error> {
+        unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
+    }
+
+    pub(crate) fn load_by_name_with_config(_: &str, _: &str) -> Result<GraphHandle, Error> {
         unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
     }
 }
