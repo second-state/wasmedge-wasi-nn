@@ -220,10 +220,7 @@ impl Graph {
     #[inline(always)]
     pub fn init_execution_context(&self) -> Result<GraphExecutionContext, Error> {
         let ctx_handle = syscall::init_execution_context(self.graph_handle)?;
-        Ok(GraphExecutionContext {
-            graph: self,
-            ctx_handle,
-        })
+        Ok(GraphExecutionContext { ctx_handle })
     }
 }
 
@@ -240,18 +237,11 @@ impl Debug for Graph {
 }
 
 /// Bind a [`Graph`] to the input and output for an inference.
-pub struct GraphExecutionContext<'a> {
-    graph: &'a Graph,
+pub struct GraphExecutionContext {
     ctx_handle: syscall::GraphExecutionContextHandle,
 }
 
-impl<'a> GraphExecutionContext<'a> {
-    /// Get the [`Graph`] instance for this [`GraphExecutionContext`] instance.
-    #[inline(always)]
-    pub fn graph(&self) -> &Graph {
-        self.graph
-    }
-
+impl GraphExecutionContext {
     /// Set input uses the `data`, not only [u8], but also [f32], [i32], etc.
     pub fn set_input<T: Sized>(
         &mut self,
@@ -318,13 +308,13 @@ impl<'a> GraphExecutionContext<'a> {
     }
 }
 
-impl<'a> Display for GraphExecutionContext<'a> {
+impl Display for GraphExecutionContext {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "GraphExecutionContext#{}", self.ctx_handle)
     }
 }
 
-impl<'a> Debug for GraphExecutionContext<'a> {
+impl Debug for GraphExecutionContext {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.ctx_handle)
     }
