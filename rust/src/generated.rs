@@ -307,8 +307,36 @@ pub unsafe fn get_output(
     }
 }
 
+pub unsafe fn get_output_single(
+    context: GraphExecutionContext,
+    index: u32,
+    out_buffer: *mut u8,
+    out_buffer_max_size: BufferSize,
+) -> Result<BufferSize, NnErrno> {
+    let mut rp0 = MaybeUninit::<BufferSize>::uninit();
+    let ret = wasi_ephemeral_nn::get_output_single(
+        context as i32,
+        index as i32,
+        out_buffer as i32,
+        out_buffer_max_size as i32,
+        rp0.as_mut_ptr() as i32,
+    );
+    match ret {
+        0 => Ok(core::ptr::read(rp0.as_mut_ptr() as i32 as *const BufferSize)),
+        _ => Err(NnErrno(ret as u16)),
+    }
+}
+
 pub unsafe fn compute(context: GraphExecutionContext) -> Result<(), NnErrno> {
     let ret = wasi_ephemeral_nn::compute(context as i32);
+    match ret {
+        0 => Ok(()),
+        _ => Err(NnErrno(ret as u16)),
+    }
+}
+
+pub unsafe fn compute_single(context: GraphExecutionContext) -> Result<(), NnErrno> {
+    let ret = wasi_ephemeral_nn::compute_single(context as i32);
     match ret {
         0 => Ok(()),
         _ => Err(NnErrno(ret as u16)),
@@ -323,7 +351,9 @@ pub mod wasi_ephemeral_nn {
         pub fn init_execution_context(arg0: i32, arg1: i32) -> i32;
         pub fn set_input(arg0: i32, arg1: i32, arg2: i32) -> i32;
         pub fn get_output(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32) -> i32;
+        pub fn get_output_single(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32) -> i32;
         pub fn compute(arg0: i32) -> i32;
+        pub fn compute_single(arg0: i32) -> i32;
         pub fn load_by_name_with_config(
             arg0: i32,
             arg1: i32,
