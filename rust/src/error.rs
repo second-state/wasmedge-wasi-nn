@@ -28,6 +28,8 @@ pub enum BackendError {
     TooLarge,
     #[error("WASI-NN Backend Error: Not Found")]
     NotFound,
+    #[error("WASI-NN Backend Error: EOS Found")]
+    EndOfSequence,
     #[error("Unknown Wasi-NN Backend Error Code `{0}`")]
     UnknownError(i32),
 }
@@ -43,6 +45,7 @@ impl From<i32> for BackendError {
             6 => Self::UnsupportedOperation,
             7 => Self::TooLarge,
             8 => Self::NotFound,
+            9 => Self::EndOfSequence,
             _ => Self::UnknownError(value),
         }
     }

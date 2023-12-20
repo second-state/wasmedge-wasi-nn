@@ -277,6 +277,12 @@ impl<'a> GraphExecutionContext<'a> {
         syscall::compute(self.ctx_handle)
     }
 
+    /// Compute the inference on the given inputs with only single token.
+    #[inline(always)]
+    pub fn compute_single(&mut self) -> Result<(), Error> {
+        syscall::compute_single(self.ctx_handle)
+    }
+
     /// Copy output tensor to `out_buffer`, return the output's **size in bytes**.
     #[inline(always)]
     pub fn get_output<T: Sized>(&self, index: usize, out_buffer: &mut [T]) -> Result<usize, Error> {
@@ -287,6 +293,22 @@ impl<'a> GraphExecutionContext<'a> {
             )
         };
         syscall::get_output(self.ctx_handle, index, out_buf)
+    }
+
+    /// Copy the last output token to `out_buffer`, return the output's **size in bytes**.
+    #[inline(always)]
+    pub fn get_output_single<T: Sized>(
+        &self,
+        index: usize,
+        out_buffer: &mut [T],
+    ) -> Result<usize, Error> {
+        let out_buf = unsafe {
+            core::slice::from_raw_parts_mut(
+                out_buffer.as_mut_ptr().cast::<u8>(),
+                std::mem::size_of_val(out_buffer),
+            )
+        };
+        syscall::get_output_single(self.ctx_handle, index, out_buf)
     }
 }
 
@@ -401,6 +423,16 @@ mod syscall {
     }
 
     #[inline(always)]
+    pub(crate) fn compute_single(ctx_handle: GraphExecutionContextHandle) -> Result<(), Error> {
+        let res = unsafe { wasi_ephemeral_nn::compute_single(ctx_handle) };
+        if res == 0 {
+            Ok(())
+        } else {
+            Err(Error::BackendError(BackendError::from(res)))
+        }
+    }
+
+    #[inline(always)]
     pub(crate) fn get_output(
         ctx_handle: GraphExecutionContextHandle,
         index: usize,
@@ -409,6 +441,30 @@ mod syscall {
         let mut out_size = 0;
         let res = unsafe {
             wasi_ephemeral_nn::get_output(
+                ctx_handle,
+                index as i32,
+                out_buf.as_mut_ptr() as i32,
+                out_buf.len() as i32,
+                &mut out_size as *mut _ as i32,
+            )
+        };
+
+        if res == 0 {
+            Ok(out_size)
+        } else {
+            Err(Error::BackendError(BackendError::from(res)))
+        }
+    }
+
+    #[inline(always)]
+    pub(crate) fn get_output_single(
+        ctx_handle: GraphExecutionContextHandle,
+        index: usize,
+        out_buf: &mut [u8],
+    ) -> Result<usize, Error> {
+        let mut out_size = 0;
+        let res = unsafe {
+            wasi_ephemeral_nn::get_output_single(
                 ctx_handle,
                 index as i32,
                 out_buf.as_mut_ptr() as i32,
@@ -487,7 +543,19 @@ mod syscall {
         unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
     }
 
+    pub(crate) fn compute_single(_: GraphExecutionContextHandle) -> Result<(), Error> {
+        unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
+    }
+
     pub(crate) fn get_output(
+        _: GraphExecutionContextHandle,
+        _: usize,
+        _: &mut [u8],
+    ) -> Result<usize, Error> {
+        unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
+    }
+
+    pub(crate) fn get_output_single(
         _: GraphExecutionContextHandle,
         _: usize,
         _: &mut [u8],

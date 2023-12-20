@@ -49,6 +49,6 @@ mod error;
 mod graph;
 mod tensor;
 
-pub use error::Error;
+pub use error::{BackendError, Error};
 pub use graph::{ExecutionTarget, Graph, GraphBuilder, GraphEncoding, GraphExecutionContext};
 pub use tensor::TensorType;
