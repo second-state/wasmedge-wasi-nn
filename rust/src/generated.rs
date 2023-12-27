@@ -343,6 +343,14 @@ pub unsafe fn compute_single(context: GraphExecutionContext) -> Result<(), NnErr
     }
 }
 
+pub unsafe fn fini_single(context: GraphExecutionContext) -> Result<(), NnErrno> {
+    let ret = wasi_ephemeral_nn::fini_single(context as i32);
+    match ret {
+        0 => Ok(()),
+        _ => Err(NnErrno(ret as u16)),
+    }
+}
+
 pub mod wasi_ephemeral_nn {
     #[link(wasm_import_module = "wasi_ephemeral_nn")]
     extern "C" {
@@ -354,6 +362,7 @@ pub mod wasi_ephemeral_nn {
         pub fn get_output_single(arg0: i32, arg1: i32, arg2: i32, arg3: i32, arg4: i32) -> i32;
         pub fn compute(arg0: i32) -> i32;
         pub fn compute_single(arg0: i32) -> i32;
+        pub fn fini_single(arg0: i32) -> i32;
         pub fn load_by_name_with_config(
             arg0: i32,
             arg1: i32,

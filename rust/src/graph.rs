@@ -283,6 +283,12 @@ impl<'a> GraphExecutionContext<'a> {
         syscall::compute_single(self.ctx_handle)
     }
 
+    /// Compute the inference on the given inputs with only single token.
+    #[inline(always)]
+    pub fn fini_single(&mut self) -> Result<(), Error> {
+        syscall::fini_single(self.ctx_handle)
+    }
+
     /// Copy output tensor to `out_buffer`, return the output's **size in bytes**.
     #[inline(always)]
     pub fn get_output<T: Sized>(&self, index: usize, out_buffer: &mut [T]) -> Result<usize, Error> {
@@ -433,6 +439,16 @@ mod syscall {
     }
 
     #[inline(always)]
+    pub(crate) fn fini_single(ctx_handle: GraphExecutionContextHandle) -> Result<(), Error> {
+        let res = unsafe { wasi_ephemeral_nn::fini_single(ctx_handle) };
+        if res == 0 {
+            Ok(())
+        } else {
+            Err(Error::BackendError(BackendError::from(res)))
+        }
+    }
+
+    #[inline(always)]
     pub(crate) fn get_output(
         ctx_handle: GraphExecutionContextHandle,
         index: usize,
@@ -544,6 +560,10 @@ mod syscall {
     }
 
     pub(crate) fn compute_single(_: GraphExecutionContextHandle) -> Result<(), Error> {
+        unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
+    }
+
+    pub(crate) fn fini_single(_: GraphExecutionContextHandle) -> Result<(), Error> {
         unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
     }
 
