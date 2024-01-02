@@ -32,6 +32,8 @@ pub enum BackendError {
     EndOfSequence,
     #[error("WASI-NN Backend Error: Context Full")]
     ContextFull,
+    #[error("WASI-NN Backend Error: Prompt Too Long")]
+    PromptTooLong,
     #[error("Unknown Wasi-NN Backend Error Code `{0}`")]
     UnknownError(i32),
 }
@@ -47,8 +49,9 @@ impl From<i32> for BackendError {
             6 => Self::UnsupportedOperation,
             7 => Self::TooLarge,
             8 => Self::NotFound,
-            9 => Self::EndOfSequence,
-            10 => Self::ContextFull,
+            100 => Self::EndOfSequence,
+            101 => Self::ContextFull,
+            102 => Self::PromptTooLong,
             _ => Self::UnknownError(value),
         }
     }
