@@ -1,4 +1,8 @@
-# wasi-nn bindings for Rust
+# wasi-nn bindings for Rust, with LLM extensions
+
+This package is inspired by the [wasi-nn] package, but with additional support for the LLM.
+
+===
 
 This package contains high-level Rust bindings for [wasi-nn] system calls. It is similar in purpose
 to the [WASI bindings] but this package provides optional access to a system's machine learning
