@@ -34,6 +34,8 @@ pub enum BackendError {
     ContextFull,
     #[error("WASI-NN Backend Error: Prompt Too Long")]
     PromptTooLong,
+    #[error("WASI-NN Backend Error: Model Not Found")]
+    ModelNotFound,
     #[error("Unknown Wasi-NN Backend Error Code `{0}`")]
     UnknownError(i32),
 }
@@ -52,6 +54,7 @@ impl From<i32> for BackendError {
             100 => Self::EndOfSequence,
             101 => Self::ContextFull,
             102 => Self::PromptTooLong,
+            103 => Self::ModelNotFound,
             _ => Self::UnknownError(value),
         }
     }
