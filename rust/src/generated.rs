@@ -351,6 +351,14 @@ pub unsafe fn fini_single(context: GraphExecutionContext) -> Result<(), NnErrno>
     }
 }
 
+pub unsafe fn unload(graph: Graph) -> Result<(), NnErrno> {
+    let ret = wasi_ephemeral_nn::unload(graph as i32);
+    match ret {
+        0 => Ok(()),
+        _ => Err(NnErrno(ret as u16)),
+    }
+}
+
 pub mod wasi_ephemeral_nn {
     #[link(wasm_import_module = "wasi_ephemeral_nn")]
     extern "C" {
@@ -370,5 +378,6 @@ pub mod wasi_ephemeral_nn {
             arg3: i32,
             arg4: i32,
         ) -> i32;
+        pub fn unload(arg0: i32) -> i32;
     }
 }
