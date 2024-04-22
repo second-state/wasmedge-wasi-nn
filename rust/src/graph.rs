@@ -222,6 +222,12 @@ impl Graph {
         let ctx_handle = syscall::init_execution_context(self.graph_handle)?;
         Ok(GraphExecutionContext { ctx_handle })
     }
+
+    /// Unload this graph.
+    #[inline(always)]
+    pub fn unload(&self) -> Result<(), Error> {
+        syscall::unload(self.graph_handle)
+    }
 }
 
 impl Display for Graph {
@@ -509,6 +515,17 @@ mod syscall {
             Err(Error::BackendError(BackendError::from(res)))
         }
     }
+
+    #[inline(always)]
+    pub(crate) fn unload(graph_handle: GraphHandle) -> Result<(), Error> {
+        let res = unsafe { wasi_ephemeral_nn::unload(graph_handle) };
+
+        if res == 0 {
+            Ok(())
+        } else {
+            Err(Error::BackendError(BackendError::from(res)))
+        }
+    }
 }
 
 // These stubbed out functions are only necessary for running `cargo test`.
@@ -574,6 +591,10 @@ mod syscall {
     }
 
     pub(crate) fn load_by_name_with_config(_: &str, _: &str) -> Result<GraphHandle, Error> {
+        unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
+    }
+
+    pub(crate) fn unload(_: GraphHandle) -> Result<(), Error> {
         unimplemented!("this crate is only intended to be used with `--target=wasm32-wasi`");
     }
 }
