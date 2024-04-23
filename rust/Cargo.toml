@@ -1,6 +1,6 @@
 [package]
 name = "wasmedge-wasi-nn"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["The Bytecode Alliance Developers", "WasmEdge Developers"]
 description = "High-level Rust bindings for wasi-nn, with LLM extensions."
 license = "Apache-2.0"

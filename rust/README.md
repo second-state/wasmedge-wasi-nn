@@ -2,7 +2,7 @@
 
 This package is inspired by the [wasi-nn] package, but with additional support for the LLM.
 
-===
+---
 
 This package contains high-level Rust bindings for [wasi-nn] system calls. It is similar in purpose
 to the [WASI bindings] but this package provides optional access to a system's machine learning
@@ -20,7 +20,7 @@ functionality from WebAssembly.
 1. Depend on this crate in your `Cargo.toml`:
     ```toml
     [dependencies]
-    wasi-nn = "0.6.0"
+    wasmedge-wasi-nn = "0.7.1"
     ```
 
 2. Use the wasi-nn APIs in your application, for example:
@@ -39,9 +39,10 @@ functionality from WebAssembly.
     cargo build --target=wasm32-wasi
     ```
 
-4. Run the generated WebAssembly in a runtime supporting [wasi-nn], e.g., [Wasmtime].
+4. Run the generated WebAssembly in a runtime supporting [wasi-nn], e.g., [Wasmtime], [WasmEdge].
 
 [Wasmtime]: https://wasmtime.dev
+[WasmEdge]: https://wasmedge.org/
 
 
 ### Build
