@@ -15,6 +15,7 @@ pub enum GraphEncoding {
     TensorflowLite,
     Autodetec,
     Ggml,
+    NeuralSpeed,
 }
 
 /// Define where the graph should be executed.

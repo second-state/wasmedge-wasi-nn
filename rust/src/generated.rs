@@ -152,6 +152,7 @@ impl GraphEncoding {
             3 => "PYTORCH",
             4 => "TENSORFLOWLITE",
             5 => "AUTODETECT",
+            7 => "NUEURALSPEED",
             _ => unsafe { core::hint::unreachable_unchecked() },
         }
     }
