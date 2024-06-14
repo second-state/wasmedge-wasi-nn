@@ -16,6 +16,7 @@ pub enum GraphEncoding {
     Autodetec,
     Ggml,
     NeuralSpeed,
+    Burn,
     Piper = 11,
 }
 

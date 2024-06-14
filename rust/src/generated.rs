@@ -141,6 +141,7 @@ pub const GRAPH_ENCODING_TENSORFLOWLITE: GraphEncoding = GraphEncoding(4);
 pub const GRAPH_ENCODING_AUTODETECT: GraphEncoding = GraphEncoding(5);
 pub const GRAPH_ENCODING_GGML: GraphEncoding = GraphEncoding(6);
 pub const GRAPH_ENCODING_NEURALSPEED: GraphEncoding = GraphEncoding(7);
+pub const GRAPH_ENCODING_BURN: GraphEncoding = GraphEncoding(8);
 pub const GRAPH_ENCODING_PIPER: GraphEncoding = GraphEncoding(11);
 impl GraphEncoding {
     pub const fn raw(&self) -> u8 {
@@ -157,6 +158,7 @@ impl GraphEncoding {
             5 => "AUTODETECT",
             6 => "GGML",
             7 => "NEURALSPEED",
+            8 => "BURN",
             11 => "PIPER",
             _ => unsafe { core::hint::unreachable_unchecked() },
         }
@@ -171,6 +173,7 @@ impl GraphEncoding {
             5 => "",
             6 => "",
             7 => "",
+            8 => "",
             11 => "",
             _ => unsafe { core::hint::unreachable_unchecked() },
         }
