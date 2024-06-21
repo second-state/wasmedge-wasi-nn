@@ -16,6 +16,7 @@ pub enum GraphEncoding {
     Autodetec,
     Ggml,
     NeuralSpeed,
+    Piper = 11,
 }
 
 /// Define where the graph should be executed.
