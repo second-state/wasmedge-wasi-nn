@@ -17,7 +17,9 @@ pub enum GraphEncoding {
     Ggml,
     NeuralSpeed,
     Burn,
-    Piper = 11,
+    Whisper,
+    Mlx,
+    Piper,
 }
 
 /// Define where the graph should be executed.
