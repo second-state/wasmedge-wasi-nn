@@ -145,6 +145,7 @@ pub const GRAPH_ENCODING_BURN: GraphEncoding = GraphEncoding(8);
 pub const GRAPH_ENCODING_WHISPER: GraphEncoding = GraphEncoding(9);
 pub const GRAPH_ENCODING_MLX: GraphEncoding = GraphEncoding(10);
 pub const GRAPH_ENCODING_PIPER: GraphEncoding = GraphEncoding(11);
+pub const GRAPH_ENCODING_CHATTTS: GraphEncoding = GraphEncoding(12);
 impl GraphEncoding {
     pub const fn raw(&self) -> u8 {
         self.0
@@ -164,6 +165,7 @@ impl GraphEncoding {
             9 => "WHISPER",
             10 => "MLX",
             11 => "PIPER",
+            12 => "CHATTTS",
             _ => unsafe { core::hint::unreachable_unchecked() },
         }
     }
@@ -181,6 +183,7 @@ impl GraphEncoding {
             9 => "",
             10 => "",
             11 => "",
+            12 => "",
             _ => unsafe { core::hint::unreachable_unchecked() },
         }
     }
