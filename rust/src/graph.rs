@@ -20,6 +20,7 @@ pub enum GraphEncoding {
     Whisper,
     Mlx,
     Piper,
+    ChatTTS,
 }
 
 /// Define where the graph should be executed.
