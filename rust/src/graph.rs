@@ -21,6 +21,8 @@ pub enum GraphEncoding {
     Mlx,
     Piper,
     ChatTTS,
+    OpenVINOGenAI,
+    BitNet
 }
 
 /// Define where the graph should be executed.
